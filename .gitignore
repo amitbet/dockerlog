@@ -1,0 +1,4 @@
+out*
+err*
+node_modules/
+container*
