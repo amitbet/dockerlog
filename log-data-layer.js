@@ -43,7 +43,7 @@ class LogDataLayer {
     }
 
     //-- INTERFACE FUNCTION-- getContainerLogData
-    // reads and returns all stored data for this container (should be a stream in a real system) 
+    // reads and returns all stored data for this container (should be a stream, just a buffer for now) 
     async getContainerLogData(id) {
         return readFile(this.getFileNameForContainer(id));
     }
@@ -67,7 +67,6 @@ class LogDataLayer {
         await this.saveDataBase();
         return writeFile(this.getFileNameForContainer(id), "");
     }
-
 
     //-- INTERFACE FUNCTION-- getContainerInfo
     // returns the container's metadata
