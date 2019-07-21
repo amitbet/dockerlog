@@ -8,7 +8,7 @@ const { promisify } = require('util');
 // create new functions with Promise API on existing Callback API function
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
-
+const appendFile = promisify(fs.appendFile);
 class LogDataLayer {
     ContainersDB = undefined;
 
@@ -50,12 +50,10 @@ class LogDataLayer {
 
     //-- INTERFACE FUNCTION-- appendLogForContainer
     //appends some log data into the container's file (should already exist)
-    appendLogForContainer(id, data) {
+    async appendLogForContainer(id, data) {
         let fileName = this.getFileNameForContainer(id);
         // this.emit("append" + id, data);
-        fs.appendFile(fileName, data, (err) => {
-            if (err) log.error("", "problem writing container log to file: %s, err: %s", fileName, err);
-        });
+        return appendFile(fileName, data);
     }
 
     //-- INTERFACE FUNCTION-- addContainer

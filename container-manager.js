@@ -63,8 +63,8 @@ class ContainerManager extends EventEmitter {
         if (stream) {
             stream.destroy();
             this.knownContainers[id] = undefined;
-            this.emit("closed" + id);
         }
+        this.emit("closed" + id);
     }
 
     close() {
@@ -100,13 +100,19 @@ class ContainerManager extends EventEmitter {
 
         //clone id for closure
         const newId = this.clone(cId);
-        sout.on('data', (data) => {
-            this.logStorage.appendLogForContainer(newId, data);
+        sout.on('data', async (data) => {
+            try {
+                await this.logStorage.appendLogForContainer(newId, data);
+            } catch (err) {
+                log.error("error appending log data to container: " + newId);
+                return;
+            }
             this.emit("append" + newId, data);
         });
 
         stream.pipe(sout);
     }
+
     // enumerates the containers and creates new entites for the ones we select to track in the data layer
     async enumContainers() {
 
@@ -115,8 +121,6 @@ class ContainerManager extends EventEmitter {
         // this.dockerDeamon.listContainers(function (err, containers) {
         containers.forEach(async (containerInfo) => {
             let cId = containerInfo.Id;
-
-
 
             if (!this.knownContainers[cId] && this.shouldLog(containerInfo)) {
                 await this.trackContainer(cId, containerInfo)
